@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 200px;
+            margin: 50px auto;
+        }
+
+        .bar {
+            border: 2px solid #cccccc;
+            margin: 5px 0 3px;
+        }
+
+        .bar>span {
+            display: block;
+            height: 20px;
+            width: 1%;
+            background-color: rgb(39, 158, 49);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <input id="pwd" type="text" maxlength="32">
+        <div class="bar">
+            <span id="rate"></span>
+        </div>
+        <span id="score">评分：0&nbsp;&nbsp;&nbsp;等级：弱</span>
+    </div>
+    <script>
+        window.onload = function () {
+            let pwd = document.getElementById('pwd');
+            let rate = document.getElementById('rate');
+            let score = document.getElementById('score');
+            let levels = { VERY_SECURE: "非常安全", SECURE: "安全", VERY_STRONG: "非常强", STRONG: "强", AVERAGE: "一般", WEAK: "弱", VERY_WEAK: "非常弱" };
+            let pass = {
+                num: 0, upper: 0, lower: 0, other: 0, len: function () {
+                    return this.num + this.upper + this.lower + this.other;
+                }, score: function () {
+                    var sum = 0;
+                    //密码长度
+                    if (this.len() >= 8) {
+                        sum += 25;
+                    } else if (this.len() >= 5) {
+                        sum += 10;
+                    } else if (this.len() > 0) {
+                        sum += 5;
+                    }
+                    //字母
+                    if (this.upper > 0 && this.lower > 0) {
+                        sum += 20;
+                    } else if (this.upper > 0 || this.lower > 0) {
+                        sum += 10;
+                    }
+                    //数字
+                    if (this.num > 1) {
+                        sum += 20;
+                    } else if (this.num > 0) {
+                        sum += 10;
+                    }
+                    //符号
+                    if (this.other > 1) {
+                        sum += 25;
+                    } else if (this.other > 0) {
+                        sum += 10;
+                    }
+                    //奖励
+                    if (this.upper > 0 && this.lower > 0 && this.num > 0 && this.other > 0) {
+                        sum += 5;
+                    } else if ((this.upper || this.lower) && this.num && this.other) {
+                        sum += 3;
+                    } else if ((this.upper || this.lower) && this.num) {
+                        sum += 2;
+                    }
+                    return sum;
+                }, level: function () {
+                    let s = this.score();
+                    if (s >= 90) {
+                        return "VERY_SECURE";
+                    } else if (s >= 80) {
+                        return "SECURE";
+                    } else if (s >= 70) {
+                        return "VERY_STRONG";
+                    } else if (s >= 60) {
+                        return "STRONG";
+                    } else if (s >= 50) {
+                        return "AVERAGE";
+                    } else if (s >= 25) {
+                        return "WEAK";
+                    } else if (s >= 0) {
+                        return "VERY_WEAK";
+                    }
+                }, clear: function () {
+                    this.num = 0;
+                    this.upper = 0;
+                    this.lower = 0;
+                    this.other = 0;
+                },
+            }
+            //初始化并且计算密码中字符等的出现次数
+            let initPass = function (val) {
+                pass.clear();
+                for (let i = 0; i < val.length; i++) {
+                    c = val.charCodeAt(i);
+                    if (c >= 48 && c <= 57) {
+                        pass.num++;
+                    } else if (c >= 97 && c <= 122) {
+                        pass.lower++;
+                    } else if (c >= 65 && c <= 90) {
+                        pass.upper++;
+                    } else {
+                        pass.other++;
+                    }
+                }
+            }
+            //设置密码的得分
+            setScore = function () {
+                score.innerHTML = "评分：" + pass.score() + "&nbsp;&nbsp;" + "等级：" + levels[pass.level()];
+                rate.style.width = pass.score() + "%";
+            }
+            pwd.addEventListener("keyup", function () {
+                initPass(pwd.value);
+                setScore();
+            })
+        }
+        /*方案的不足：出现次数多的字符加分不够合理，可以加上减分的算法；
+          方案的特点：测试多遍始终最高分只有95分的代码，正如没有绝对安全的密码
+        */
+    </script>
+</body>
+
+</html>

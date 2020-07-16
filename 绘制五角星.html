@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绘制五角星</title>
+</head>
+<body>
+    <canvas id="canvas" style="border:1px solid #000;display:block; margin:50px auto">
+    </canvas>
+    <script>
+        window.onload = function () {
+            var canvas = document.getElementById("canvas");
+            canvas.width = 800;
+            canvas.height = 800;
+            var context = canvas.getContext('2d');
+            function drawStar(cxt, R, r, x, y) {
+                cxt.beginPath();
+                for (var i = 0; i < 5; i++) {
+                    cxt.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI) * R + x,
+                        -Math.sin((18 + i * 72) / 180 * Math.PI) * R + y);
+                    cxt.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * r + x,
+                        -Math.sin((54 + i * 72) / 180 * Math.PI) * r + y);
+                }
+                context.closePath();
+            }
+            drawStar(context,300,150,400,400);
+            context.lineWidth = 10;
+            context.fillStyle = "orange";
+            context.stroke();
+            context.fill();
+        }
+    </script>
+</body>
+
+</html>
